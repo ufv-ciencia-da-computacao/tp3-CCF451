@@ -1,4 +1,4 @@
-#include "includes/bitmap.h"
+#include "../lib/bitmap.h"
 
 /*
 	All position values and indexes below are 0-indexed
@@ -9,8 +9,8 @@ static ull rl(int l, int r){
 	return ((x << (r - l + 1)) - 1) << l;
 }
 
-void init_bitmap(bitmap_t *bitmap){
-	bitmap->bits = (ull*) malloc(BITMAP_SIZE * sizeof(ull));
+void init_bitmap(bitmap_t *bitmap, int size){
+	bitmap->bits = (ull*) malloc(size * sizeof(ull));
 	memset(bitmap->bits, 0, sizeof(bitmap->bits));
 }
 
