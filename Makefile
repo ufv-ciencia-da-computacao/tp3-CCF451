@@ -1,9 +1,15 @@
 .PHONY: all
 
-all: main
+all: main clean
 
-main:
-	gcc main.c -o main
+main: color commands
+	gcc main.c color.o commands.o -o main
+
+color:
+	gcc -c ./src/color.c -o color.o
+
+commands:
+	gcc -c ./src/commands.c -o commands.o
 
 clean:
 ifeq ($(OS),Windows_NT)
