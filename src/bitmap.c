@@ -10,7 +10,7 @@ static ull rl(int l, int r){
 }
 
 void init_bitmap(bitmap_t *bitmap){
-	bitmap->bits = (*ull) malloc(BITMAP_SIZE * sizeof(ull));
+	bitmap->bits = (ull*) malloc(BITMAP_SIZE * sizeof(ull));
 	memset(bitmap->bits, 0, sizeof(bitmap->bits));
 }
 

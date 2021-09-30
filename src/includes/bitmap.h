@@ -1,14 +1,17 @@
-#infdef __BITMAP_H__
+#ifndef __BITMAP_H__
 #define __BITMAP_H__
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define unsigned long long ull
+#include <string.h>
 
 #define BIT_SIZE (1 << 6)
 #define BITMAP_SIZE (1 << 10)
 
+#define LN_BIT_SIZE 6
+#define LN_BITMAP_SIZE 10
+
+typedef unsigned long long ull;
 typedef struct bitmap{
 	ull *bits;
 } bitmap_t;
