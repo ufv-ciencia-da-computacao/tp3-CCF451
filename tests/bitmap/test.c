@@ -1,6 +1,5 @@
 #include "../../lib/bitmap.h"
 
-
 void print(bitmap_t *bitmap){
 	ull x = 1;
 	for(int i = 0; i < 4; ++i){
@@ -9,7 +8,6 @@ void print(bitmap_t *bitmap){
 	}
 	printf("\n");
 }
-
 
 int main(){
 	bitmap_t b;
