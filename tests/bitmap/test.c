@@ -1,4 +1,4 @@
-#include "../lib/bitmap.h"
+#include "../../lib/bitmap.h"
 
 
 void print(bitmap_t *bitmap){
