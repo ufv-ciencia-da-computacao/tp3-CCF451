@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./lib/color.h"
-#include "./lib/commands.h"
+#include "./lib/cmd_if.h"
 
 int main() {
     char line[201];
