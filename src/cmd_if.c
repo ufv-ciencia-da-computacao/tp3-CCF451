@@ -131,9 +131,16 @@ void cmd_cat(int argc, char *argv[]){
   printf("name:%s file:%s \n",name,file );
 }
 
+void cmd_stat(int argc, char *argv[]){
+  char *name=argv[0];
+  char *file=argv[1];
+
+  printf("name:%s file:%s \n",name,file );
+}
+
 int get_cmd_value(char cmd[]) {
-    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat"};
-    const int cntCommands = 9;
+    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat","stat"};
+    const int cntCommands = 10;
 
     for(int i=0; i<cntCommands; ++i) {
         if(strcmp(cmd, commands[i]) == 0) return i;
@@ -171,6 +178,9 @@ void cmd_execute(int argc, char *argv[]) {
             break;
         case 8:
             cmd_cat(argc,argv);
+            break;
+        case 9:
+            cmd_stat(argc,argv);
             break;
 
         default:
