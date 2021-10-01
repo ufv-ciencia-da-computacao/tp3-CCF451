@@ -14,15 +14,17 @@ void print(bitmap_t *bitmap){
 int main(){
 	bitmap_t b;
 
-	init_bitmap(&b, 256);
+	init_bitmap(&b, BITMAP_SIZE);
 
-	reset_bits(&b, 0, 255);
-	set_bits(&b, 0, 129);
-	// //print(&b);
-	// reset_bits(&b, 3, 62);
-	// //print(&b);
-	// reset_bits(&b, 63, 69);
+	set_bits(&b, 0, 1024 * 64 - 1);
 	print(&b);
+	int n = next_available_block(&b);
+	printf("%d\n", n);
+	reset_bits(&b, 0, n);
+	print(&b);
+	set_bits(&b, 0, 69);
+	print(&b);
+	printf("%d\n", next_available_block(&b));
 	destroy_bitmap(&b);
 	return 0;
 }

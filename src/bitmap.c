@@ -36,7 +36,7 @@ void reset_bits(bitmap_t *bitmap, int posl, int posr){
 	posr %= (LN_ULL_SIZE + 1);
 
 	for(int i = idx_l; i <= idx_r; ++i) 
-		bitmap->bits[i] ^= (i ^ idx_r ? rl(posl, LN_ULL_SIZE) : rl(posl, posr)), posl = 0;
+		bitmap->bits[i] &= ~(i ^ idx_r ? rl(posl, LN_ULL_SIZE) : rl(posl, posr)), posl = 0;
 }
 
 int available_blocks(bitmap_t *bitmap){
@@ -47,9 +47,9 @@ int available_blocks(bitmap_t *bitmap){
 }
 
 int next_available_block(bitmap_t *bitmap){
-	int next_block = -1;
+	int next_block = 0;	
 	
-	for(int i = 0; i < BITMAP_SIZE; ++i) next_block += BIT_SIZE - __builtin_ctzll(bitmap->bits[i]);
+	for(int i = 0; i < BITMAP_SIZE && bitmap->bits[i]; ++i) next_block += BIT_SIZE - __builtin_clzll(bitmap->bits[i]);
 
 	return next_block;
 }
