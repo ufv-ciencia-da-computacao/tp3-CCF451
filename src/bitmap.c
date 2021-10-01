@@ -6,7 +6,13 @@
 
 static ull rl(int l, int r){
 	ull x = 1;
-	return ((x << (r - l + 1)) - 1) << l;
+	int ok = (r - l + 1) ^ (LN_ULL_SIZE + 1);
+	int interval = (ok ? r - l + 1 : r - l);
+
+	ull ans = ((x << (interval)) - 1) << (ok ? l : l + 1);
+	
+	if(!ok) ans |= x;
+	return ans; 
 }
 
 void init_bitmap(bitmap_t *bitmap, int size){
@@ -16,21 +22,21 @@ void init_bitmap(bitmap_t *bitmap, int size){
 
 void set_bits(bitmap_t *bitmap, int posl, int posr){
 	int idx_l = posl >> LN_BIT_SIZE, idx_r = posr >> LN_BIT_SIZE;
-	posl %= BIT_SIZE;
-	posr %= BIT_SIZE;
+	posl %= (LN_ULL_SIZE + 1);
+	posr %= (LN_ULL_SIZE + 1);
 
 
 	for(int i = idx_l; i <= idx_r; ++i) 
-		bitmap->bits[i] |= (i ^ idx_r ? rl(posl, BITMAP_SIZE - 1) : rl(posl, posr)), posl = 0;
+		bitmap->bits[i] |= (i ^ idx_r ? rl(posl, LN_ULL_SIZE) : rl(posl, posr)), posl = 0;
 }
 
 void reset_bits(bitmap_t *bitmap, int posl, int posr){
 	int idx_l = posl >> LN_BIT_SIZE, idx_r = posr >> LN_BIT_SIZE;
-	posl %= BIT_SIZE;
-	posr %= BIT_SIZE;
+	posl %= (LN_ULL_SIZE + 1);
+	posr %= (LN_ULL_SIZE + 1);
 
 	for(int i = idx_l; i <= idx_r; ++i) 
-		bitmap->bits[i] ^= (i ^ idx_r ? rl(posl, BITMAP_SIZE - 1) : rl(posl, posr)), posl = 0;
+		bitmap->bits[i] ^= (i ^ idx_r ? rl(posl, LN_ULL_SIZE) : rl(posl, posr)), posl = 0;
 }
 
 int available_blocks(bitmap_t *bitmap){
@@ -51,6 +57,4 @@ int next_available_block(bitmap_t *bitmap){
 void destroy_bitmap(bitmap_t *bitmap){
 	free(bitmap->bits);
 	bitmap->bits = NULL;
-	free(bitmap);
-	bitmap=NULL;
 }

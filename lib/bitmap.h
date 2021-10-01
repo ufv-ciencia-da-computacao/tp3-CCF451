@@ -8,8 +8,10 @@
 #define BIT_SIZE (1 << 6)
 #define BITMAP_SIZE (1 << 10)
 
+
 #define LN_BIT_SIZE 6
 #define LN_BITMAP_SIZE 10
+#define LN_ULL_SIZE 63
 
 typedef unsigned long long ull;
 typedef struct bitmap{
