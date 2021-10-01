@@ -18,9 +18,10 @@ typedef struct fs {
 
 void fs_init(file_system_t *fs);
 void fs_mount(file_system_t *fs);
-void fs_curr_path(file_system_t *fs, char str[]);
-void fs_create_dir(file_system_t *fs, char path[]);
+void fs_curr_path(file_system_t *fs, char *str);
+void fs_create_dir(file_system_t *fs, char *path);
 void fs_list_dir(file_system_t *fs);
+void fs_open_dir(file_system_t *fs, char *path);
 
 
 #endif

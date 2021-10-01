@@ -106,7 +106,7 @@ void cmd_cd(int argc, char *argv[]) {
         strcpy(name, argv[optind]);
     }
 
-    printf("open dir %s\n", name);
+    fs_open_dir(filesystem, name);
 }
 
 void cmd_touch(int argc, char *argv[]){

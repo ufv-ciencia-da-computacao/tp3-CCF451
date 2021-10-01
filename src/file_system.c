@@ -18,6 +18,12 @@
 static int next_inode_id = 1;
 static int next_block_id = 1;
 
+
+static void debug(file_system_t *fs) {
+    printf("inode index: %d\n", fs->inode_index);
+    printf("block index: %d\n", fs->inode.block_index);
+}
+
 void fs_init(file_system_t *fs) {
     fs->path_size = 0;
     fs->inode_index = 0;
@@ -64,7 +70,7 @@ void fs_curr_path(file_system_t *fs, char *str) {
 
 void fs_create_dir(file_system_t *fs, char *path) {
     inode_t new_inode;
-    inode_init(&new_inode, IF_DIR, 2 * sizeof(dir_item_t), 0, next_block_id * 256, 1);
+    inode_init(&new_inode, IF_DIR, 2 * sizeof(dir_item_t), 0, next_block_id, 1);
     
     /**/
     fseek(fs->f_inode, next_inode_id * sizeof(inode_t), SEEK_SET);
@@ -86,10 +92,12 @@ void fs_create_dir(file_system_t *fs, char *path) {
     dir_item_init(&di, path, next_inode_id);
     fwrite(&di, sizeof(dir_item_t), 1, fs->f_block);
 
+    /**/
     fs->inode.size += sizeof(dir_item_t);
     fseek(fs->f_inode, fs->inode_index * sizeof(inode_t), SEEK_SET);
     fwrite(&fs->inode, sizeof(inode_t), 1, fs->f_inode);
 
+    /**/
     next_block_id++;
     next_inode_id++;
     fflush(fs->f_inode);
@@ -99,10 +107,9 @@ void fs_create_dir(file_system_t *fs, char *path) {
 void fs_list_dir(file_system_t *fs) {
     for(int i = 2 * sizeof(dir_item_t); i < fs->inode.size; i += sizeof(dir_item_t)) {
         dir_item_t di;
-        fseek(fs->f_block, i, SEEK_SET);
+        fseek(fs->f_block, fs->inode.block_index * BLOCK_SIZE, SEEK_SET);
+        fseek(fs->f_block, i, SEEK_CUR);
         fread(&di, sizeof(dir_item_t), 1, fs->f_block);
-
-        // printf("%s | %d\n", di.name, di.inode);
         
         inode_t inode;
         fseek(fs->f_inode, di.inode * sizeof(inode_t), SEEK_SET);
@@ -110,9 +117,42 @@ void fs_list_dir(file_system_t *fs) {
         
         if(inode.type == IF_DIR) {
             color_blue(di.name);
+            // color_white(" | ");
+            // printf("%d", di.inode);
         } else {
             color_white(di.name);
+            // printf(" | %d", di.inode);
         }
         printf("\n");
+    }
+}
+
+void fs_open_dir(file_system_t *fs, char *path) {
+    int ok = -1;
+    dir_item_t di;
+    for(int i=0; i < fs->inode.size; i += sizeof(dir_item_t)) {
+        fseek(fs->f_block, fs->inode.block_index * BLOCK_SIZE, SEEK_SET);
+        fseek(fs->f_block, i, SEEK_CUR);
+        fread(&di, sizeof(dir_item_t), 1, fs->f_block);
+
+        if(strcmp(path, di.name) == 0) {
+            ok = i;
+            break;
+        }
+    }
+
+    if(ok == -1) {
+        fprintf(stderr, "Arquivo ou diretorio inexistente\n");
+        return;
+    }
+
+    fseek(fs->f_inode, di.inode * sizeof(inode_t), SEEK_SET);
+    fread(&fs->inode, sizeof(inode_t), 1, fs->f_inode);
+    fs->inode_index = di.inode;
+
+    if(strcmp(path, "..") == 0) {                   // igual a '..'
+        fs->path_size -= (fs->path_size) ? 1 : 0; 
+    } else if(strcmp(path, ".")) {                  // diferente de '.'
+        fs->path[fs->path_size++] = di;
     }
 }
