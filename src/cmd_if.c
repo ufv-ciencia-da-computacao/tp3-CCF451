@@ -13,7 +13,7 @@ void cmd_mkdir(int argc, char *argv[]) {
                 return;
         }
     }
-    
+
     if(argc - optind == 0) {
         fprintf(stderr, "%s: faltando operando\n", argv[0]);
         return;
@@ -23,7 +23,7 @@ void cmd_mkdir(int argc, char *argv[]) {
         name = argv[optind];
         printf("Criar dir %s\n", name);
     }
-    
+
 }
 
 void cmd_rm(int argc, char *argv[]) {
@@ -104,9 +104,36 @@ void cmd_cd(int argc, char *argv[]) {
     printf("open dir %s\n", name);
 }
 
+void cmd_touch(int argc, char *argv[]){
+
+  char *name=argv[0];
+  char *path=argv[1];
+
+  printf("name:%s\n",name );
+  printf("path:%s\n", path);
+
+}
+
+void cmd_mv(int argc, char *argv[]){
+  char *name=argv[0];
+  char *file=argv[1];
+  char *path=argv[2];
+
+  printf("name:%s file:%s path:%s\n",name,file,path );
+
+
+}
+
+void cmd_cat(int argc, char *argv[]){
+  char *name=argv[0];
+  char *file=argv[1];
+
+  printf("name:%s file:%s \n",name,file );
+}
+
 int get_cmd_value(char cmd[]) {
-    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd"};
-    const int cntCommands = 6;
+    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat"};
+    const int cntCommands = 9;
 
     for(int i=0; i<cntCommands; ++i) {
         if(strcmp(cmd, commands[i]) == 0) return i;
@@ -135,6 +162,15 @@ void cmd_execute(int argc, char *argv[]) {
             break;
         case 5:
             cmd_cd(argc, argv);
+            break;
+        case 6:
+            cmd_touch(argc,argv);
+            break;
+        case 7:
+            cmd_mv(argc,argv);
+            break;
+        case 8:
+            cmd_cat(argc,argv);
             break;
 
         default:

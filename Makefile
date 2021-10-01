@@ -14,7 +14,7 @@ cmd_if:
 clean:
 ifeq ($(OS),Windows_NT)
 #	del main
-	del *.o
+#	del *.o
 else
 	rm -rf *.o
 endif
