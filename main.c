@@ -6,22 +6,25 @@
 #include "./lib/file_system.h"
 #include "./lib/inode.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 
     file_system_t fs;
-#ifdef MOUNT
-    fs_mount(&fs);
-    printf("Booting for the first time....\n");
-#else
-    fs_init(&fs);
-#endif
+
+    if(argc == 2 && strcmp(argv[1], "mount") == 0) {
+        fs_mount(&fs);
+        printf("Booting for the first time....\n");
+    } else {
+        fs_init(&fs);
+    }
 
     char line[201];
-    int argc;
-    char *argv[200];
+    int cntArgs;
+    char *args[200];
 
     char path[10000];
     strcpy(path, "/");
+
+    cmd_init(&fs);
 
     while(1) {
         color_green("SO-TP3");
@@ -32,17 +35,17 @@ int main() {
         fgets(line, 200, stdin);
         line[strlen(line) - 1] = '\0';      // remove '\n'
 
-        argv[0] = strtok(line, " ");
-        argc = 1;
+        args[0] = strtok(line, " ");
+        cntArgs = 1;
 
-        while(argv[argc-1] != NULL) {
-            argv[argc++] = strtok(NULL, " ");
+        while(args[cntArgs-1] != NULL) {
+            args[cntArgs++] = strtok(NULL, " ");
         }
-        argc--;
+        cntArgs--;
 
-        if(argc == 0) continue;
+        if(cntArgs == 0) continue;
 
-        cmd_execute(argc, argv);
+        cmd_execute(cntArgs, args);
     }
 
     return 0;

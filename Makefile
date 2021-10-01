@@ -1,12 +1,8 @@
 .PHONY: all
 all: main
 
-mount: color cmd_if file_system inode
-	gcc -D MOUNT main.c color.o cmd_if.o file_system.o inode.o -o main
-	rm *.o
-
-main: color cmd_if file_system inode
-	gcc main.c color.o cmd_if.o file_system.o inode.o -o main
+main: color cmd_if file_system inode dir
+	gcc main.c color.o cmd_if.o file_system.o inode.o dir.o -o main
 	rm *.o
 
 color:
@@ -21,10 +17,12 @@ file_system:
 inode:
 	gcc -c ./src/inode.c -o inode.o
 
+dir:
+	gcc -c ./src/dir.c -o dir.o
+
 clean:
 ifeq ($(OS),Windows_NT)
-#	del main
-	del *.o
+	del main.exe
 else
 	rm main
 endif

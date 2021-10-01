@@ -6,6 +6,6 @@ typedef struct dir_item {
     int inode;
 } dir_item_t;
 
-void dir_item_init(dir_item_t *di, char name, int inode);
+void dir_item_init(dir_item_t *di, char *name, int inode);
 
 #endif

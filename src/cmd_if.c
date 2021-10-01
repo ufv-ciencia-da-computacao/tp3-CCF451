@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+file_system_t *filesystem;
+
 void cmd_mkdir(int argc, char *argv[]) {
     char opt;
     char *name;
@@ -21,7 +23,8 @@ void cmd_mkdir(int argc, char *argv[]) {
 
     for(; optind < argc; ++optind) {
         name = argv[optind];
-        printf("Criar dir %s\n", name);
+        
+        fs_create_dir(filesystem, name);
     }
 
 }
@@ -72,7 +75,9 @@ void cmd_ls(int argc, char *argv[]) {
     }
 
     if(optind == argc) {
-        printf("list here\n");
+        
+        fs_list_dir(filesystem);
+
     } else {
         for(; optind < argc; ++optind) {
             printf("list dir %s\n", argv[optind]);
@@ -146,6 +151,10 @@ int get_cmd_value(char cmd[]) {
         if(strcmp(cmd, commands[i]) == 0) return i;
     }
     return -1;
+}
+
+void cmd_init(file_system_t *fs) {
+    filesystem = fs;
 }
 
 void cmd_execute(int argc, char *argv[]) {
