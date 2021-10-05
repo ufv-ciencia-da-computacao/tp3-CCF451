@@ -5,20 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BIT_SIZE (1 << 6)
-#define BITMAP_SIZE (1 << 10)
-
-
-#define LN_BIT_SIZE 6
-#define LN_BITMAP_SIZE 10
-#define LN_ULL_SIZE 63
+#define ULL_SIZE (1 << 6)
+#define LN_ULL_SIZE 6
 
 typedef unsigned long long ull;
+typedef unsigned int uint;
 typedef struct bitmap{
 	ull *bits;
+	int size;
 } bitmap_t;
 
-void init_bitmap(bitmap_t *bitmap, int size);
+void init_bitmap(bitmap_t *bitmap, uint size);
 void set_bits(bitmap_t *bitmap, int posl, int posr);
 void reset_bits(bitmap_t *bitmap, int posl, int posr);
 int available_blocks(bitmap_t *bitmap);
