@@ -3,9 +3,6 @@
 
 #include <time.h>
 
-#define IF_DIR 1
-#define IF_FILE 2
-
 typedef struct inode {
     time_t created_at;
     time_t updated_at;
@@ -19,6 +16,7 @@ typedef struct inode {
 } inode_t;
 
 void inode_init(inode_t *inode, int type, int size, int disk_block_ptr, int block_index, int allocated_blocks);
+
 void inode_set_updated_at(inode_t *inode, time_t t);
 void inode_set_last_access_date(inode_t *inode, time_t t);
 void inode_set_size(inode_t *inode, int size);
