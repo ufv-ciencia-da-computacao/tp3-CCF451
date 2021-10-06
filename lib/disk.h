@@ -16,7 +16,7 @@ void disk_close(disk_t *disk);
 void disk_mount(disk_t *disk);
 void disk_format(disk_t *disk, int block_size, int nblocks);
 
-void disk_read(disk_t *disk, uint8_t *data, uint16_t block_index);
-void disk_write(disk_t *disk, uint8_t *data, uint16_t block_index);
+void disk_read(disk_t *disk, uint8_t *data, int block_index);
+void disk_write(disk_t *disk, uint8_t *data, int block_index);
 
 #endif

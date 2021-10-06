@@ -10,9 +10,8 @@ typedef struct inode {
     int    type;
     int    size;
     int    disk_block_ptr;
-    int    block_index;                 //block_index[8]
+    int    block_index;
     int    allocated_blocks;
-                                        // missing pointers' block
 } inode_t;
 
 void inode_init(inode_t *inode, int type, int size, int disk_block_ptr, int block_index, int allocated_blocks);

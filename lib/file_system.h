@@ -10,6 +10,10 @@
 
 typedef struct {
     disk_t *disk;
+    int blocks_bitmap_inode;
+    int blocks_bitmap_data;
+    int blocks_inode;
+    int blocks_data;
 } file_system_t;
 
 void fs_init(file_system_t *fs, disk_t *disk);

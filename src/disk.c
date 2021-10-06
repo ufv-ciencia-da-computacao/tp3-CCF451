@@ -27,12 +27,12 @@ void disk_format(disk_t *disk, int block_size, int nblocks) {
     fflush(disk->file);
 }
 
-void disk_read(disk_t *disk, uint8_t *data, uint16_t block_index) {
+void disk_read(disk_t *disk, uint8_t *data, int block_index) {
     fseek(disk->file, block_index * disk->block_size, SEEK_SET);
     fread(data, 1, disk->block_size, disk->file);
 }
 
-void disk_write(disk_t *disk, uint8_t *data, uint16_t block_index) {
+void disk_write(disk_t *disk, uint8_t *data, int block_index) {
     fseek(disk->file, block_index * disk->block_size, SEEK_SET);
     fwrite(data, 1, disk->block_size, disk->file);
     fflush(disk->file);
