@@ -17,14 +17,29 @@ static ull rl(int l, int r){
 	return ans;
 }
 
+static int sz(int size){
+	int length = (size % ULL_SIZE ? (size >> LN_ULL_SIZE) + 1: size >> LN_ULL_SIZE)	;
+	return length;
+}
+
 void init_bitmap(bitmap_t *bitmap, uint size){
-	bitmap->size = (size % ULL_SIZE ? ((size >> LN_ULL_SIZE) + 1: size >> LN_ULL_SIZE);
-	bitmap->bits = (ull*) malloc(bitmap->size * sizeof(ull));
+	bitmap->size = size;
+	bitmap->bits = (ull*) malloc(sz(size) * sizeof(ull));
 
 	memset(bitmap->bits, 0, sizeof(bitmap->bits));
 }
 
+void init_bitmap_array(bitmap_t *bitmap, void *array, uint size){
+	bitmap->size = size;
+	memcpy(bitmap->bits, array, BYTE_SIZE * bitmap->size);
+}
+
+
 void set_bits(bitmap_t *bitmap, int posl, int posr){
+	if(posr > bitmap->size - 1){
+		printf("Right position value should be less or equal bitmap->size - 1");
+		return;
+	}
 	int idx_l = posl >> LN_ULL_SIZE, idx_r = posr >> LN_ULL_SIZE;
 	posl %= ULL_SIZE;
 	posr %= ULL_SIZE;
@@ -35,6 +50,11 @@ void set_bits(bitmap_t *bitmap, int posl, int posr){
 }
 
 void reset_bits(bitmap_t *bitmap, int posl, int posr){
+	if(posr > bitmap->size - 1){
+		printf("Right position value should be less or equal bitmap->size - 1");
+		return;
+	}
+
 	int idx_l = posl >> LN_ULL_SIZE, idx_r = posr >> LN_ULL_SIZE;
 	posl %= ULL_SIZE;
 	posr %= ULL_SIZE;
@@ -45,7 +65,11 @@ void reset_bits(bitmap_t *bitmap, int posl, int posr){
 
 int available_blocks(bitmap_t *bitmap){
 	int free_blocks = 0;
-	for(int i = 0; i < bitmap->size; ++i) free_blocks += ULL_SIZE - __builtin_popcountll(bitmap->bits[i]);
+	int length = sz(bitmap->size);
+
+	for(int i = 0; i < length; ++i) free_blocks += ULL_SIZE - __builtin_popcountll(bitmap->bits[i]);
+
+	free_blocks -= (ULL_SIZE - bitmap->size % ULL_SIZE);
 
 	return free_blocks;
 }
@@ -53,9 +77,10 @@ int available_blocks(bitmap_t *bitmap){
 int next_available_block(bitmap_t *bitmap){
 	int next_block = 0;
 
-	for(int i = 0; i < bitmap->size && bitmap->bits[i]; ++i) next_block += ULL_SIZE - __builtin_clzll(bitmap->bits[i]);
+	for(int i = 0; i < sz(bitmap->size) && bitmap->bits[i]; ++i)
+		next_block += ULL_SIZE - __builtin_clzll(bitmap->bits[i]);
 
-	return next_block;
+	return (next_block >= bitmap->size? -1 : next_block);
 }
 
 void destroy_bitmap(bitmap_t *bitmap){

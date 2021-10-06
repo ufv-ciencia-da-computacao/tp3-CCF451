@@ -3,7 +3,7 @@
 void print(bitmap_t *bitmap){
 	ull x = 1;
 	for(int i = 0; i < 4; ++i){
-		for(int j = 0; j < BIT_SIZE; ++j) printf("%d", (x << j) & bitmap->bits[i] ? 1: 0);
+		for(int j = 0; j < ULL_SIZE; ++j) printf("%d", (x << j) & bitmap->bits[i] ? 1: 0);
 		printf("\n");
 	}
 	printf("\n");
@@ -12,13 +12,13 @@ void print(bitmap_t *bitmap){
 int main(){
 	bitmap_t b;
 
-	init_bitmap(&b, BITMAP_SIZE);
+	init_bitmap(&b, 1024);
 
-	set_bits(&b, 0, 1024 * 64 - 1);
+	set_bits(&b, 0, 1023);
 	print(&b);
 	int n = next_available_block(&b);
 	printf("%d\n", n);
-	reset_bits(&b, 0, n);
+	reset_bits(&b, 0, 1023);
 	print(&b);
 	set_bits(&b, 0, 69);
 	print(&b);
