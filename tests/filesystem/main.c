@@ -12,7 +12,8 @@ int main() {
     fs_init(&fs, &disk);
     //fs_format(&fs);
 
-
+    int iinode = fs_create(&fs, IF_DIR);
+    printf("index_inode = %d\n", iinode);
 
     return 0;
 }
