@@ -30,8 +30,8 @@ void init_bitmap(bitmap_t *bitmap, uint size){
 }
 
 void init_bitmap_array(bitmap_t *bitmap, void *array, uint size){
-	bitmap->size = size;
-	memcpy(bitmap->bits, array, BYTE_SIZE * bitmap->size);
+	bitmap->size = size >> 3;
+	memcpy(bitmap->bits, array, sizeof(array));
 }
 
 
@@ -61,6 +61,10 @@ void reset_bits(bitmap_t *bitmap, int posl, int posr){
 
 	for(int i = idx_l; i <= idx_r; ++i)
 		bitmap->bits[i] &= ~(i ^ idx_r ? rl(posl, ULL_SIZE - 1) : rl(posl, posr)), posl = 0;
+}
+
+int get_bit(bitmap_t *bitmap, int pos){
+	return bitmap->bits[pos>>LN_ULL_SIZE] & (1ull << (pos % ULL_SIZE));
 }
 
 int available_blocks(bitmap_t *bitmap){

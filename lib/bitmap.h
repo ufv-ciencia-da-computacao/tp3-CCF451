@@ -18,9 +18,9 @@ typedef struct bitmap{
 } bitmap_t;
 
 void init_bitmap(bitmap_t *bitmap, uint size);
-void init_bitmap_array(bitmap_t *bitmap, void *array, uint size);
 void set_bits(bitmap_t *bitmap, int posl, int posr);
 void reset_bits(bitmap_t *bitmap, int posl, int posr);
+int get_bit(bitmap_t *bitmap, int pos);
 int available_blocks(bitmap_t *bitmap);
 int next_available_block(bitmap_t *bitmap);
 void destroy_bitmap(bitmap_t *bitmap);
