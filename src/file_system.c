@@ -159,7 +159,7 @@ void fs_format(file_system_t *fs) {
     fs->blocks_data = fs->disk->nblocks - fs->blocks_inode - fs->blocks_bitmap_inode - fs->blocks_bitmap_block - 2;
     write_super_block(fs);
 
-    int used_blocks = fs->blocks_bitmap_inode + fs->blocks_bitmap_block + 2;
+    int used_blocks = fs->blocks_inode + fs->blocks_bitmap_inode + fs->blocks_bitmap_block + 2;
 
     destroy_bitmap(&fs->b_block);
     destroy_bitmap(&fs->b_inode);
@@ -182,9 +182,7 @@ int  fs_create(file_system_t *fs, int file_type) {
     set_bits(&fs->b_inode, new_inode, new_inode);
 
     int av = next_available_block(&fs->b_block);
-    // printf("bit %d: %d\n", av, get_bit(&fs->b_block, av) ? 1 : 0);
     set_bits(&fs->b_block, av, av);
-    // printf("bit %d: %d\n", av, get_bit(&fs->b_block, av) ? 1 : 0);
 
     inode_t inode;
     inode_init(&inode, file_type, 0, av, 0, 0);
@@ -230,6 +228,7 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
         } else {
             bit = inode.block_index;
         }
+        printf("delete bit: %d\n", bit);
         reset_bits(&fs->b_block, bit, bit);
     }
 
@@ -238,11 +237,13 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
         bit = next_available_block(&fs->b_block);
         set_bits(&fs->b_block, bit, bit);
 
-        if(inode.allocated_blocks > 1) {
-            *(pointers + sizeof(int) * (inode.allocated_blocks-1)) = bit;
+        if(inode.allocated_blocks >= 1) {
+            memcpy(pointers + sizeof(int) * (inode.allocated_blocks-1), &bit, sizeof(int));
         } else {
             inode.block_index = bit;
         }
+
+        printf("alloc bit: %d\n", bit);
     }
 
     assert(inode.allocated_blocks == needed_blocks);
@@ -259,11 +260,11 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
 }
 
 void fs_delete(file_system_t *fs, int inode_index) {
+    printf("fs_delete()\n");
     reset_bits(&fs->b_inode, inode_index, inode_index);
 
     inode_t inode;
     read_inode(fs, inode_index, &inode);
-
 
     uint8_t *pointers = (uint8_t *) malloc(fs->disk->block_size);
     disk_read(fs->disk, pointers, inode.disk_block_ptr);
@@ -275,6 +276,7 @@ void fs_delete(file_system_t *fs, int inode_index) {
         } else {
             memcpy(&bit, pointers + (i-1) * sizeof(int), sizeof(int));
         }
+        printf("delete bit: %d\n", bit);
         reset_bits(&fs->b_block, bit, bit);
     }
 

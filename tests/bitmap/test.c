@@ -18,9 +18,10 @@ int main(){
 	print(&b);
 	int n = next_available_block(&b);
 	printf("%d\n", n);
-	reset_bits(&b, 0, 1023);
+	reset_bits(&b, 100, 512);
 	print(&b);
-	set_bits(&b, 0, 69);
+	printf("%d\n", next_available_block(&b));
+	set_bits(&b, 150, 330);
 	print(&b);
 	printf("%d\n", next_available_block(&b));
 	destroy_bitmap(&b);
