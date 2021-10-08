@@ -55,13 +55,13 @@ static void write_super_block(file_system_t *fs) {
 
 void debug_arr(uint8_t *data, int len) {
     for(int i=0; i<len; ++i) {
-        printf("%d.", data[i]);
+        fprintf(stderr, "%d.", data[i]);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 }
 
 static void read_bitmaps(file_system_t *fs) {
-    printf("read_bitmaps()\n");
+    fprintf(stderr, "read_bitmaps()\n");
     // Read inode bitmap //
     int block_index = 2;
     uint8_t *buffer = (uint8_t *) malloc(fs->blocks_bitmap_inode * fs->disk->block_size);
@@ -100,7 +100,7 @@ static void read_bitmaps(file_system_t *fs) {
 }
 
 static void write_bitmaps(file_system_t *fs) {
-    printf("write_bitmaps()\n");
+    fprintf(stderr, "write_bitmaps()\n");
     // write inode bitmap //
     int block_index = 2;
     uint8_t *buffer = (uint8_t *) malloc(fs->blocks_bitmap_inode * fs->disk->block_size);
@@ -135,11 +135,11 @@ static void write_bitmaps(file_system_t *fs) {
 }
 
 void fs_init(file_system_t *fs, disk_t *disk) {
-    printf("fs_init()\n");
+    fprintf(stderr, "fs_init()\n");
     fs->disk = disk;
     read_super_block(fs);
     read_bitmaps(fs);
-    printf("| 1 | 1 | %d | %d | %d | %d |\n", fs->blocks_bitmap_inode, fs->blocks_bitmap_block, fs->blocks_inode, fs->blocks_data);
+    fprintf(stderr, "| 1 | 1 | %d | %d | %d | %d |\n", fs->blocks_bitmap_inode, fs->blocks_bitmap_block, fs->blocks_inode, fs->blocks_data);
 }
 
 void fs_flush(file_system_t *fs) {
@@ -152,7 +152,7 @@ void fs_destroy(file_system_t *fs) {
 }
 
 void fs_format(file_system_t *fs) {
-    printf("fs_format()\n");
+    fprintf(stderr, "fs_format()\n");
     fs->blocks_bitmap_inode = ((NUMBER_OF_INODES+7)/8 + fs->disk->block_size-1) / fs->disk->block_size;
     fs->blocks_bitmap_block = ((fs->disk->nblocks+7)/8 + fs->disk->block_size-1) / fs->disk->block_size;
     fs->blocks_inode = (NUMBER_OF_INODES * sizeof(inode_t) + fs->disk->block_size-1) / fs->disk->block_size;
@@ -167,7 +167,7 @@ void fs_format(file_system_t *fs) {
     init_bitmap(&fs->b_block, fs->disk->nblocks);
     init_bitmap(&fs->b_inode, NUMBER_OF_INODES);
 
-    printf("used blocks: %d\n", used_blocks);
+    fprintf(stderr, "used blocks: %d\n", used_blocks);
 
     set_bits(&fs->b_block, 0, used_blocks-1);
     reset_bits(&fs->b_block, used_blocks, fs->disk->nblocks-1);
@@ -228,7 +228,7 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
         } else {
             bit = inode.block_index;
         }
-        printf("delete bit: %d\n", bit);
+        fprintf(stderr, "delete bit: %d\n", bit);
         reset_bits(&fs->b_block, bit, bit);
     }
 
@@ -243,7 +243,7 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
             inode.block_index = bit;
         }
 
-        printf("alloc bit: %d\n", bit);
+        fprintf(stderr, "alloc bit: %d\n", bit);
     }
 
     assert(inode.allocated_blocks == needed_blocks);
@@ -260,7 +260,7 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
 }
 
 void fs_delete(file_system_t *fs, int inode_index) {
-    printf("fs_delete()\n");
+    fprintf(stderr, "fs_delete()\n");
     reset_bits(&fs->b_inode, inode_index, inode_index);
 
     inode_t inode;
@@ -276,7 +276,7 @@ void fs_delete(file_system_t *fs, int inode_index) {
         } else {
             memcpy(&bit, pointers + (i-1) * sizeof(int), sizeof(int));
         }
-        printf("delete bit: %d\n", bit);
+        fprintf(stderr, "delete bit: %d\n", bit);
         reset_bits(&fs->b_block, bit, bit);
     }
 
