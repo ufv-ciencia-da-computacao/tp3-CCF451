@@ -90,10 +90,13 @@ int available_blocks(bitmap_t *bitmap){
 int next_available_block(bitmap_t *bitmap){
 	int next_block = 0;
 
-	for(int i = 0; i < sz(bitmap->size) && bitmap->bits[i]; ++i)
-		next_block += ULL_SIZE - __builtin_clzll(bitmap->bits[i]);
+	for(int i = 0; i < bitmap->size; ++i){
+		int idx = i >> LN_ULL_SIZE;
+		int bit = i % ULL_SIZE;
+		if(!(bitmap->bits[idx] & (1ull << bit))) return i;
+	}
 
-	return (next_block >= bitmap->size? -1 : next_block);
+	return -1;
 }
 
 void destroy_bitmap(bitmap_t *bitmap){
