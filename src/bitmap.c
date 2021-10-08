@@ -22,6 +22,15 @@ static int sz(int size){
 	return length;
 }
 
+void debug(bitmap_t *bitmap){
+	printf("bitmap_debug()\n");
+	for(int i=0; i<bitmap->size; ++i) {
+		if(get_bit(bitmap, i)) printf("1");
+		else printf("0");
+	}
+	printf("\n");
+}
+
 void init_bitmap(bitmap_t *bitmap, uint size){
 	bitmap->size = size;
 	bitmap->bits = (ull*) malloc(sz(size) * sizeof(ull));
@@ -64,7 +73,7 @@ void reset_bits(bitmap_t *bitmap, int posl, int posr){
 }
 
 int get_bit(bitmap_t *bitmap, int pos){
-	return bitmap->bits[pos>>LN_ULL_SIZE] & (1ull << (pos % ULL_SIZE));
+	return (bitmap->bits[pos>>LN_ULL_SIZE] & (1ull << (pos % ULL_SIZE))) ? 1 : 0;
 }
 
 int available_blocks(bitmap_t *bitmap){
