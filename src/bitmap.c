@@ -88,12 +88,11 @@ int available_blocks(bitmap_t *bitmap){
 }
 
 int next_available_block(bitmap_t *bitmap){
-	int next_block = 0;
-
+	ull x = 1;
 	for(int i = 0; i < bitmap->size; ++i){
 		int idx = i >> LN_ULL_SIZE;
 		int bit = i % ULL_SIZE;
-		if(!(bitmap->bits[idx] & (1ull << bit))) return i;
+		if(!(bitmap->bits[idx] & (x << bit))) return i;
 	}
 
 	return -1;
