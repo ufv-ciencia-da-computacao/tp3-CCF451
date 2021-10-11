@@ -23,5 +23,7 @@ alloc bit: 43
 write_bitmaps()
 alloc bit: 45
 write_bitmaps()
+fs_delete()
+delete bit: 45
 write_bitmaps()
 write_bitmaps()

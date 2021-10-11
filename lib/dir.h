@@ -14,6 +14,7 @@ typedef struct {
 } dir_t;
 
 dir_item_t dir_item_create(char *dirname, int inode);
+void copy_dir_item(dir_item_t *src, dir_item_t *dest);
 void dir_create(file_system_t *fs, int iinode, char *dirname);
 void dir_rename(file_system_t *fs, int iinode, char *dirname, char *new_dirname);
 void dir_delete(file_system_t *fs, int iinode, char *dirname);

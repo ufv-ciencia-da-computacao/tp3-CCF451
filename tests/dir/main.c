@@ -25,11 +25,11 @@ int main() {
     fs_write(&fs, inode, (uint8_t*)dir.items, dir.nitems*sizeof(dir_item_t));
 
     dir_create(&fs, inode, "cdc");
-    dir_create(&fs, inode, "cdc");
-    dir_create(&fs, inode, "cdc");
-    dir_create(&fs, inode, "cdc");
-    dir_create(&fs, inode, "cdc");
-    dir_create(&fs, inode, "cdc");
+    dir_create(&fs, inode, "cdc1");
+    dir_create(&fs, inode, "cdc2");
+    dir_create(&fs, inode, "cdc3");
+    dir_create(&fs, inode, "cdc4");
+    dir_create(&fs, inode, "cdc5");
 
     dir_t dir_current;
     int size = fs_read(&fs, inode, (uint8_t*)dir_current.items);
@@ -68,11 +68,11 @@ int main() {
 
     printf("\n");
 
-    dir_rename(&fs, 7, "carlinhos", "caca");
+    dir_delete(&fs, 2, "caf");
 
-    subsubinode = 7;
+    inode = 2;
 
-    size = fs_read(&fs, subsubinode, (uint8_t*)dir_current.items);
+    size = fs_read(&fs, inode, (uint8_t*)dir_current.items);
     dir_current.nitems = size/sizeof(dir_item_t);
 
     for (int i = 0; i < dir_current.nitems; i++) {
