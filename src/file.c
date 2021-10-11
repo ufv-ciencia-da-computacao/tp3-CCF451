@@ -55,7 +55,9 @@ void file_delete(file_system_t *fs, int iinode, char *filename){
   fs_flush(fs);
 
 }
-void file_read(file_system_t *fs, int iinode, char *filename, file_t *file);
+void file_read(file_system_t *fs, int iinode, char *filename, file_t *file){
+  
+}
 void file_write(file_system_t *fs, int iinode, char *filename, file_t *file){
 
 }
