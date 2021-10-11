@@ -2,6 +2,7 @@
 #define __FILE_H__
 
 #include "file_system.h"
+#include "dir.h"
 
 typedef struct {
     char data[MAX_FILE_SIZE];
