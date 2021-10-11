@@ -85,6 +85,7 @@ void dir_delete(file_system_t *fs, int iinode, char *dirname) {
     fs_flush(fs);
 }
 
-void dir_read(file_system_t *fs, int iinode, char *dirname, dir_t *dir);
-void dir_write(file_system_t *fs, int iinode, char *dirname, dir_t *dir);
-int  dir_open(file_system_t *fs, int iinode, char *dirname);
+void dir_read(file_system_t *fs, int iinode, dir_t *dir) {
+    int size = fs_read(fs, iinode, (uint8_t*)dir->items);
+    dir->nitems = size/sizeof(dir_item_t);
+}

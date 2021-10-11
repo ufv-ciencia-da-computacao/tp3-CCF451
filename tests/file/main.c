@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include "../../lib/file.h"
+
 int main() {
 
     disk_t disk;
@@ -57,16 +60,18 @@ int main() {
     dir_create(&fs, subsubinode, "carlinhos");
 
     file_create(&fs,7,"file1");
+    file_rename(&fs, 7, "file1", "file2");
+    dir_delete(&fs, 7, "file2");
 
     size = fs_read(&fs, subsubinode, (uint8_t*)dir_current.items);
 
     dir_current.nitems = size/sizeof(dir_item_t);
 
-
-
     for (int i = 0; i < dir_current.nitems; i++) {
         printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
     }
+
+    printf("\n");
 
 
     // printf("\n");
