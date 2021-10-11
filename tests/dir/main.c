@@ -10,7 +10,7 @@ int main() {
     file_system_t fs;
     fs_init(&fs, &disk);
     
-    disk_format(&disk, 1<<9, 1<<12); fs_format(&fs);
+    // disk_format(&disk, 1<<9, 1<<12); fs_format(&fs);
 
     int N = 5;
     char string[MAX_FILE_SIZE] = "Testando 1 2 3 4 5 6 7 8 9\n";
