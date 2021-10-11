@@ -283,3 +283,10 @@ void fs_delete(file_system_t *fs, int inode_index) {
     reset_bits(&fs->b_block, inode.disk_block_ptr, inode.disk_block_ptr);
     free(pointers);
 }
+
+int  fs_type(file_system_t *fs, int inode_index) {
+    inode_t inode;
+    read_inode(fs, inode_index, &inode);
+
+    return inode.type;
+}
