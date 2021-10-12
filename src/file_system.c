@@ -199,7 +199,7 @@ int  fs_read(file_system_t *fs, int inode_index, uint8_t *data) {
 
     uint8_t *pointers = (uint8_t *) malloc(fs->disk->block_size);
     disk_read(fs->disk, pointers, inode.disk_block_ptr);
-    
+
     int block_index = inode.block_index;
     for(int i=0; i < inode.allocated_blocks; ++i) {
         disk_read(fs->disk, data + i*fs->disk->block_size, block_index);
@@ -218,7 +218,7 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
 
     uint8_t *pointers = (uint8_t *) malloc(fs->disk->block_size);
     disk_read(fs->disk, pointers, inode.disk_block_ptr);
-    
+
     int needed_blocks = (size + fs->disk->block_size - 1) / fs->disk->block_size;       // teto(size / BLOCK_SIZE)
 
     for(; inode.allocated_blocks > needed_blocks; --inode.allocated_blocks) {
