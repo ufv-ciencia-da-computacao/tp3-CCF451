@@ -6,10 +6,12 @@
 typedef struct cmd_if {
     file_system_t *fs;
     int inode;
-    char current_dirname[128];
+
+    char path[1000][100];
+    int path_size;
 }cmd_t;
 
-
+void cmd_path(char *path);
 void cmd_init(file_system_t *fs);
 void cmd_execute(int argc, char *argv[]);
 

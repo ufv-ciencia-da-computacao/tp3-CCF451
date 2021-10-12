@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     while(1) {
         color_green("SO-TP3");
         color_white(":");
-        // fs_curr_path(&fs, path);
+        cmd_path(path);
         color_blue(path);                   // print curr path
         color_white("$ ");
         fgets(line, 200, stdin);

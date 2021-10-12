@@ -62,7 +62,7 @@ void dir_delete_dir(file_system_t *fs, int iinode) {
     for (int i = 2; i < size/sizeof(dir_item_t); i++) {
         if (fs_type(fs, dir_current.items[i].inode) == IF_DIR) dir_delete_dir(fs, dir_current.items[i].inode);
         fs_delete(fs, dir_current.items[i].inode);
-        printf("%d\n", dir_current.items[i].inode);
+        fprintf(stderr, "%d\n", dir_current.items[i].inode);
     }
 }
 
