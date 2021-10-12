@@ -7,9 +7,9 @@ void inode_init(inode_t *inode, int type, int size, int disk_block_ptr, int bloc
     inode->block_index = block_index;
     inode->allocated_blocks = allocated_blocks;
 
-    time(&(inode->created_at));
-    time(&(inode->last_access_date));
-    time(&(inode->updated_at));
+    inode->created_at = time(NULL);
+    inode->last_access_date = time(NULL);
+    inode->updated_at = time(NULL);
 }
 
 void inode_set_updated_at(inode_t *inode, time_t t) {

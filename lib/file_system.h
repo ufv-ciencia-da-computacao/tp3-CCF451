@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "disk.h"
 #include "bitmap.h"
+#include "inode.h"
 
 #define IF_DIR          1
 #define IF_FILE         2
@@ -28,5 +29,14 @@ int  fs_read(file_system_t *fs, int inode_index, uint8_t *data);
 void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size);
 void fs_delete(file_system_t *fs, int inode_index);
 int  fs_type(file_system_t *fs, int inode_index);
+
+time_t fs_inode_get_created_at(file_system_t *fs, int inode_index);
+time_t fs_inode_get_updated_at(file_system_t *fs, int inode_index);
+time_t fs_inode_get_last_access_date(file_system_t *fs, int inode_index);
+int fs_inode_get_type(file_system_t *fs, int inode_index);
+int fs_inode_get_size(file_system_t *fs, int inode_index);
+int fs_inode_get_disk_block_ptr(file_system_t *fs, int inode_index);
+int fs_inode_get_block_index(file_system_t *fs, int inode_index);
+int fs_inode_get_allocated_blocks(file_system_t *fs, int inode_index);
 
 #endif

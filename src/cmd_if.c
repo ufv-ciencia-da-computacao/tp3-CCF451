@@ -208,10 +208,36 @@ void cmd_cat(int argc, char *argv[]){
 }
 
 void cmd_stat(int argc, char *argv[]){
-  char *name=argv[0];
-  char *file=argv[1];
+    char *name=argv[0];
+    char *file=argv[1];
 
-  printf("name:%s file:%s \n",name,file );
+    dir_t dir;
+    dir_read(cmd_struct.fs, cmd_struct.inode, &dir);
+    int inode;
+
+    for(int i=0; i<dir.nitems; i++) {
+        if (!strcmp(dir.items[i].name, file)) {
+            inode = dir.items[i].inode;
+            break;
+        }
+    }
+
+    time_t last_access = fs_inode_get_last_access_date(cmd_struct.fs, inode);
+    time_t created_at = fs_inode_get_created_at(cmd_struct.fs, inode);
+    time_t updated_at = fs_inode_get_updated_at(cmd_struct.fs, inode);
+
+    struct tm *t1, *t2, *t3;
+    t1 = localtime(&last_access);
+    printf("Last Access: %s",asctime(t1));
+    t2 = localtime(&created_at);
+    printf("Created At: %s", asctime(t2));
+    t3 = localtime(&updated_at); 
+    printf("Updated At: %s", asctime(t3));
+    fflush(stdin);
+    printf("Filetype: %s\n", fs_inode_get_type(cmd_struct.fs, inode) == IF_DIR ? "Directory": "File");
+    printf("Allocated blocks: %d\n", fs_inode_get_allocated_blocks(cmd_struct.fs, inode));
+    printf("Block index: %d\n", fs_inode_get_block_index(cmd_struct.fs, inode));
+    printf("Size: %d\n", fs_inode_get_size(cmd_struct.fs, inode));
 }
 
 int get_cmd_value(char cmd[]) {

@@ -1,7 +1,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "../lib/file_system.h"
-#include "../lib/inode.h"
 #include "../lib/disk.h"
 #include "../lib/bitmap.h"
 #include <math.h>
@@ -18,6 +17,12 @@ static void read_inode(file_system_t *fs, int inode_index, inode_t *inode) {
     }
     memcpy(inode, data + inode_index * sizeof(inode_t), sizeof(inode_t));
     free(data);
+}
+
+static inode_t fs_get_inode(file_system_t *fs, int inode_index) {
+    inode_t inode;
+    read_inode(fs, inode_index, &inode);
+    return inode;
 }
 
 static void write_inode(file_system_t *fs, int inode_index, inode_t *inode) {
@@ -193,7 +198,8 @@ int  fs_create(file_system_t *fs, int file_type) {
 int  fs_read(file_system_t *fs, int inode_index, uint8_t *data) {
     inode_t inode;
     read_inode(fs, inode_index, &inode);
-    time(&inode.last_access_date);
+    inode_set_last_access_date(&inode, time(NULL));
+    // time(&inode.last_access_date);
     write_inode(fs, inode_index, &inode);
     if(inode.size == 0) return 0;
 
@@ -214,7 +220,8 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
     read_inode(fs, inode_index, &inode);
 
     inode.size = size;
-    time(&inode.updated_at);
+    inode_set_updated_at(&inode, time(NULL));
+    // time(&inode.updated_at);
 
     uint8_t *pointers = (uint8_t *) malloc(fs->disk->block_size);
     disk_read(fs->disk, pointers, inode.disk_block_ptr);
@@ -289,4 +296,36 @@ int  fs_type(file_system_t *fs, int inode_index) {
     read_inode(fs, inode_index, &inode);
 
     return inode.type;
+}
+
+time_t fs_inode_get_created_at(file_system_t *fs, int inode_index) {
+    return inode_get_created_at(fs_get_inode(fs, inode_index));
+}
+
+time_t fs_inode_get_updated_at(file_system_t *fs, int inode_index) {
+    return inode_get_updated_at(fs_get_inode(fs, inode_index));
+}
+
+time_t fs_inode_get_last_access_date(file_system_t *fs, int inode_index) {
+    return inode_get_last_access_date(fs_get_inode(fs, inode_index));
+}
+
+int fs_inode_get_type(file_system_t *fs, int inode_index) {
+    return inode_get_type(fs_get_inode(fs, inode_index));
+}
+
+int fs_inode_get_size(file_system_t *fs, int inode_index) {
+    return inode_get_size(fs_get_inode(fs, inode_index));
+}
+
+int fs_inode_get_disk_block_ptr(file_system_t *fs, int inode_index) {
+    return inode_get_disk_block_ptr(fs_get_inode(fs, inode_index));
+}
+
+int fs_inode_get_block_index(file_system_t *fs, int inode_index) {
+    return inode_get_block_index(fs_get_inode(fs, inode_index));
+}
+
+int fs_inode_get_allocated_blocks(file_system_t *fs, int inode_index) {
+    return inode_get_allocated_blocks(fs_get_inode(fs, inode_index));
 }
