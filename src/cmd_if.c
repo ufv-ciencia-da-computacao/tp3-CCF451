@@ -1,10 +1,53 @@
 #include "../lib/cmd_if.h"
+#include "../lib/dir.h"
+#include "../lib/file.h"
+#include "../lib/file_system.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-file_system_t *filesystem;
+#define BLOCKSIZE 1<<9
+#define NUM_BLOCKS 1<<12
+cmd_t cmd_struct;
+
+void cmd_mkfs(int argc, char *argv[]) {
+    char opt;
+    char *name;
+    while((opt = getopt(argc, argv, ":")) != -1) {
+        switch(opt) {
+            default:
+                return;
+        }
+    }
+
+    if(argc - optind < 2) {
+        fprintf(stderr, "%s: faltando operando\n", argv[0]);
+        return;
+    }
+
+    // mkfs blocksize num_blocks
+    int blocksize = atoi(argv[optind++]);
+    int n_blocks = atoi(argv[optind++]);
+
+    for(; optind < argc; ++optind) {
+        
+    }
+
+    disk_format(cmd_struct.fs->disk, blocksize, n_blocks);
+    fs_format(cmd_struct.fs);
+
+    dir_t dir;
+    int inode = fs_create(cmd_struct.fs, IF_DIR);
+    dir.items[0] = dir_item_create(".", inode);
+    dir.items[1] = dir_item_create("..", inode);
+    dir.nitems = 2;
+
+    cmd_struct.inode = inode;
+
+    fs_write(cmd_struct.fs, inode, (uint8_t*)dir.items, dir.nitems*sizeof(dir_item_t));
+    fs_flush(cmd_struct.fs);
+}
 
 void cmd_mkdir(int argc, char *argv[]) {
     char opt;
@@ -24,7 +67,7 @@ void cmd_mkdir(int argc, char *argv[]) {
     for(; optind < argc; ++optind) {
         name = argv[optind];
         
-        fs_create_dir(filesystem, name);
+        dir_create(cmd_struct.fs, cmd_struct.inode, name);
     }
 
 }
@@ -50,9 +93,11 @@ void cmd_rm(int argc, char *argv[]) {
     for(; optind < argc; ++optind) {
         name = argv[optind];
         if(remove_dir) {
-            printf("Remove dir %s\n", name);
+            dir_delete(cmd_struct.fs, cmd_struct.inode, name);
+            // printf("Remove dir %s\n", name);
         } else {
-            printf("Remove file %s\n", name);
+            file_delete(cmd_struct.fs, cmd_struct.inode, name);
+            // printf("Remove file %s\n", name);
         }
     }
 
@@ -76,7 +121,7 @@ void cmd_ls(int argc, char *argv[]) {
 
     if(optind == argc) {
         
-        fs_list_dir(filesystem);
+        // fs_list_dir(filesystem);
 
     } else {
         for(; optind < argc; ++optind) {
@@ -106,13 +151,15 @@ void cmd_cd(int argc, char *argv[]) {
         strcpy(name, argv[optind]);
     }
 
-    fs_open_dir(filesystem, name);
+    // fs_open_dir(filesystem, name);
 }
 
 void cmd_touch(int argc, char *argv[]){
 
   char *name=argv[0];
   char *path=argv[1];
+// open
+//   file_create(cmd_struct.fs, cmd_struct.inode, name);
 
   printf("name:%s\n",name );
   printf("path:%s\n", path);
@@ -153,8 +200,24 @@ int get_cmd_value(char cmd[]) {
     return -1;
 }
 
-void cmd_init(file_system_t *fs) {
-    filesystem = fs;
+void cmd_init(file_system_t *file_not_global) {    
+    cmd_struct.fs = file_not_global;
+    cmd_struct.inode = 0;
+    strcpy(cmd_struct.current_dirname, "/");
+
+    disk_format(cmd_struct.fs->disk, BLOCKSIZE, NUM_BLOCKS);
+    fs_format(cmd_struct.fs);
+
+    dir_t dir;
+    int inode = fs_create(cmd_struct.fs, IF_DIR);
+    dir.items[0] = dir_item_create(".", inode);
+    dir.items[1] = dir_item_create("..", inode);
+    dir.nitems = 2;
+
+    cmd_struct.inode = inode;
+
+    fs_write(cmd_struct.fs, inode, (uint8_t*)dir.items, dir.nitems*sizeof(dir_item_t));
+    fs_flush(cmd_struct.fs);
 }
 
 void cmd_execute(int argc, char *argv[]) {
@@ -195,4 +258,6 @@ void cmd_execute(int argc, char *argv[]) {
         default:
             printf("%s: comando nao encontrado\n", argv[0]);
     }
+
+    fs_flush(cmd_struct.fs);
 }

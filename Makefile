@@ -1,8 +1,8 @@
 .PHONY: all
 all: main
 
-main: color cmd_if file_system inode dir
-	gcc main.c color.o cmd_if.o file_system.o inode.o dir.o -o main
+main: color cmd_if file_system inode dir file bitmap disk
+	gcc main.c color.o cmd_if.o file_system.o inode.o dir.o file.o bitmap.o disk.o -o main
 	rm *.o
 
 color:
@@ -19,6 +19,15 @@ inode:
 
 dir:
 	gcc -c ./src/dir.c -o dir.o
+
+disk:
+	gcc -c ./src/disk.c -o disk.o
+
+file:
+	gcc -c ./src/file.c -o file.o
+
+bitmap:
+	gcc -c ./src/bitmap.c -o bitmap.o
 
 clean:
 ifeq ($(OS),Windows_NT)
