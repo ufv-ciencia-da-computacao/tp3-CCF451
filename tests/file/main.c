@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include "../../lib/file.h"
 
+void print_tree(file_system_t *fs, int iinode, int height) {
+    dir_t dir;
+    dir_read(fs, iinode, &dir);
+
+    printf("/\n");
+    for(int i=2; i<dir.nitems; ++i) {
+        for(int j=0; j<height; ++j) printf("\t");
+        printf("%s", dir.items[i].name);
+        if(fs_type(fs, dir.items[i].inode) == IF_DIR) print_tree(fs, dir.items[i].inode, height+1);
+        else printf("\n");
+    }
+}
+
 int main() {
 
     disk_t disk;
@@ -38,10 +51,10 @@ int main() {
     dir_current.nitems = size/sizeof(dir_item_t);
 
     for (int i = 0; i < dir_current.nitems; i++) {
-        printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
+        // printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
     }
 
-    printf("\n");
+    // printf("\n");
 
     int subinode = 2;
     dir_create(&fs, subinode, "caf");
@@ -51,10 +64,10 @@ int main() {
     dir_current.nitems = size/sizeof(dir_item_t);
 
     for (int i = 0; i < dir_current.nitems; i++) {
-        printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
+        // printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
     }
 
-    printf("\n");
+    // printf("\n");
 
 
     //file_rename(&fs, 7, "file1", "file2");//ok
@@ -69,12 +82,15 @@ int main() {
     //file_write(&fs,7,"file2",&file_w);
     //file_read(&fs,7,"file2",&file_r);
 
-    //printf("dados:%s\n",file_r.data);
+    // printf("dados:%s\n",file_r.data);
 
 
     dir_t teste;
     dir_read(&fs,2,&teste);
-    printf("%d\n",teste.nitems );
+    // printf("%d\n",teste.nitems );
+
+    print_tree(&fs, 0, 1);
+
     file_move(&fs,0,"file1","../cdc1/caf/file1");
 
 
@@ -83,29 +99,31 @@ int main() {
     dir_current.nitems = size/sizeof(dir_item_t);
 
     for (int i = 0; i < dir_current.nitems; i++) {
-       printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
+    //    printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
     }
 
-    printf("\n");
+    // printf("\n");
 
     size = fs_read(&fs, 2, (uint8_t*)dir_current.items);
 
    dir_current.nitems = size/sizeof(dir_item_t);
 
    for (int i = 0; i < dir_current.nitems; i++) {
-       printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
+    //    printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
    }
 
-   printf("\n");
+//    printf("\n");
     size = fs_read(&fs, 8, (uint8_t*)dir_current.items);
 
    dir_current.nitems = size/sizeof(dir_item_t);
 
    for (int i = 0; i < dir_current.nitems; i++) {
-       printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
+    //    printf("%s %d\t", dir_current.items[i].name, dir_current.items[i].inode);
    }
 
-   printf("\n");
+   printf("\n\n");
+
+   print_tree(&fs, 0, 1);
 
 
     //
