@@ -91,7 +91,7 @@ int main() {
 
     print_tree(&fs, 0, 1);
 
-    file_move(&fs,0,"file1","../cdc1/caf/file1");
+    file_move(&fs,0,"file1","file2");
 
 
     size = fs_read(&fs, 0, (uint8_t*)dir_current.items);
