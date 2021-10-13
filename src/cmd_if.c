@@ -240,9 +240,36 @@ void cmd_stat(int argc, char *argv[]){
     printf("Size: %d\n", fs_inode_get_size(cmd_struct.fs, inode));
 }
 
+void cmd_copyin(int argc, char *argv[]) {
+    char *name = argv[1];
+    char *real = argv[2];
+
+    FILE *f = fopen(real, "r");
+    file_t file;
+    file.size = 0;
+
+    for(int i=0; i<MAX_FILE_SIZE; ++i) {
+        char c;
+        fscanf(f, "%c", &c);
+        if(feof(f)) break;
+        file.data[file.size++] = c;
+    }
+
+    fclose(f);
+
+    file_write(cmd_struct.fs, cmd_struct.inode, name, &file);
+}
+
+void cmd_rename(int argc, char *argv[]) {
+    char *name = argv[1];
+    char *new_name = argv[2];
+
+    file_rename(cmd_struct.fs, cmd_struct.inode, name, new_name);
+}
+
 int get_cmd_value(char cmd[]) {
-    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat","stat","mkfs"};
-    const int cntCommands = 11;
+    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat","stat","mkfs","copyin","rename"};
+    const int cntCommands = 13;
 
     for(int i=0; i<cntCommands; ++i) {
         if(strcmp(cmd, commands[i]) == 0) return i;
@@ -306,6 +333,12 @@ void cmd_execute(int argc, char *argv[]) {
             break;
         case 10:
             cmd_mkfs(argc,argv);
+            break;
+        case 11:
+            cmd_copyin(argc, argv);
+            break;
+        case 12:
+            cmd_rename(argc, argv);
             break;
 
         default:

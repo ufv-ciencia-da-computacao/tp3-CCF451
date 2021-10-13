@@ -29,9 +29,9 @@ void file_rename(file_system_t *fs, int iinode, char *filename, char *new_filena
 	fs_flush(fs);
 }
 void file_move(file_system_t *fs, int iinode, char *filename, char *path) {
-	file_t new_file;
+	file_t curr_file;
 	int inodePath=(path[0]=='/'?0:iinode);
-	file_read(fs,iinode,filename,&new_file);
+	file_read(fs,iinode,filename,&curr_file);
 	char str[200];
 	int posicao=0;
 	dir_t dir;
@@ -57,6 +57,7 @@ void file_move(file_system_t *fs, int iinode, char *filename, char *path) {
 		}
 	}
 	file_create(fs,inodePath,str);
+	file_write(fs, inodePath, str, &curr_file);
 	file_delete(fs,iinode,filename);
 }
 void file_delete(file_system_t *fs, int iinode, char *filename) {
