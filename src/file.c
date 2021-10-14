@@ -30,32 +30,27 @@ void file_rename(file_system_t *fs, int iinode, char *filename, char *new_filena
 }
 void file_move(file_system_t *fs, int iinode, char *filename, char *path) {
 	file_t curr_file;
-	int inodePath=(path[0]=='/'?0:iinode);
 	file_read(fs,iinode,filename,&curr_file);
 	char str[200];
 	int posicao=0;
-	dir_t dir;
+	int inodePath=(path[0]=='/'?0:iinode);
 	for(int i=(path[0]=='/'?1:0);i<(int)strlen(path);i++){
 
 		if(path[i]=='/'){
-			//printf("%s %d\n",str,inodePath );
 
-			fflush(stdout);
-			dir_read(fs,inodePath,&dir);
-			for(int j=0;j<dir.nitems;j++){
-				if(strcmp(str,dir.items[j].name)==0){
-					inodePath=dir.items[j].inode;
-					break;
-				}
+			inodePath = dir_open(fs, inodePath, str);
+			if(inodePath == -1) {
+				return;
 			}
 
 			posicao=0;
-
+			strcpy(str, "");
 		}else{
 			str[posicao++]=path[i];
 			str[posicao]='\0';
 		}
 	}
+	if(strcmp(str, "") == 0) strcpy(str, filename);
 	file_create(fs,inodePath,str);
 	file_write(fs, inodePath, str, &curr_file);
 	file_delete(fs,iinode,filename);

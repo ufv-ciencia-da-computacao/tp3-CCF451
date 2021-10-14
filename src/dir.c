@@ -57,20 +57,19 @@ void dir_rename(file_system_t *fs, int iinode, char *dirname, char *new_dirname)
 
 void dir_delete_dir(file_system_t *fs, int iinode) {
     dir_t dir_current;
-    int size = fs_read(fs, iinode, (uint8_t*)dir_current.items);
+    dir_read(fs, iinode, &dir_current);
 
-    for (int i = 2; i < size/sizeof(dir_item_t); i++) {
+    for (int i = 2; i < dir_current.nitems; i++) {
         if (fs_type(fs, dir_current.items[i].inode) == IF_DIR) dir_delete_dir(fs, dir_current.items[i].inode);
-        fs_delete(fs, dir_current.items[i].inode);
-        fprintf(stderr, "%d\n", dir_current.items[i].inode);
+        else fs_delete(fs, dir_current.items[i].inode);
     }
+    fs_delete(fs, iinode);
 }
 
 void dir_delete(file_system_t *fs, int iinode, char *dirname) {
     dir_t dir_current;
 
-    int size = fs_read(fs, iinode, (uint8_t*)dir_current.items);
-    dir_current.nitems = size/sizeof(dir_item_t);
+    dir_read(fs, iinode, &dir_current);
 
     for (int i = 2; i < dir_current.nitems; i++) {
         if (!strcmp(dir_current.items[i].name, dirname)) {
@@ -88,4 +87,19 @@ void dir_delete(file_system_t *fs, int iinode, char *dirname) {
 void dir_read(file_system_t *fs, int iinode, dir_t *dir) {
     int size = fs_read(fs, iinode, (uint8_t*)(dir->items));
     dir->nitems = size/sizeof(dir_item_t);
+}
+
+int dir_open(file_system_t *fs, int iinode, char *dirname) {
+    
+    dir_t dir;
+    dir_read(fs, iinode, &dir);
+    
+    for(int i=0; i<dir.nitems; ++i) {
+        if(strcmp(dir.items[i].name, dirname) == 0) {
+            return dir.items[i].inode;
+            break;
+        }
+    }
+
+    return -1;
 }

@@ -16,12 +16,9 @@ int main(int argc, char *argv[]) {
     
     // // disk_format(&disk, 1<<9, 1<<12); fs_format(&fs);
 
-    char line[201];
-    int cntArgs;
-    char *args[200];
-
     char path[10000];
     strcpy(path, "/");
+    char line[201];
 
     cmd_init(&fs);
 
@@ -29,22 +26,10 @@ int main(int argc, char *argv[]) {
         color_green("SO-TP3");
         color_white(":");
         cmd_path(path);
-        color_blue(path);                   // print curr path
+        color_blue(path);
         color_white("$ ");
         fgets(line, 200, stdin);
-        line[strlen(line) - 1] = '\0';      // remove '\n'
-
-        args[0] = strtok(line, " ");
-        cntArgs = 1;
-
-        while(args[cntArgs-1] != NULL) {
-            args[cntArgs++] = strtok(NULL, " ");
-        }
-        cntArgs--;
-
-        if(cntArgs == 0) continue;
-
-        cmd_execute(cntArgs, args);
+        cmd_execute(line);
     }
 
     return 0;

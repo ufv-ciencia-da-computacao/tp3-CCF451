@@ -1,0 +1,9 @@
+mkfs 512 4096
+mkdir outro
+cd outro
+mkdir sub-outro
+cd sub-outro
+touch file
+copyin file main.c
+mkdir sub-sub-outro
+cd /

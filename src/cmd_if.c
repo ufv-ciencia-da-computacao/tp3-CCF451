@@ -120,12 +120,10 @@ void cmd_ls(int argc, char *argv[]) {
     char opt;
     char *name = NULL;
     int print_inode = 0;
-    while((opt = getopt(argc, argv, "rl")) != -1) {
+    while((opt = getopt(argc, argv, "i")) != -1) {
         switch(opt) {
             case 'i':
                 print_inode = 1;
-                break;
-            case 'l':
                 break;
             default:
                 return;
@@ -139,7 +137,11 @@ void cmd_ls(int argc, char *argv[]) {
     for(int i=2; i<dir.nitems; ++i) {
         if(fs_type(cmd_struct.fs, dir.items[i].inode) == IF_DIR) color_blue(dir.items[i].name);
         else color_green(dir.items[i].name);
-        printf("\t");
+        if(print_inode) {
+            color_white("");
+            printf(" %d", dir.items[i].inode);
+        }
+        printf("\t\t");
         any = 1;
     }
     if(any) printf("\n");
@@ -148,7 +150,7 @@ void cmd_ls(int argc, char *argv[]) {
 
 void cmd_cd(int argc, char *argv[]) {
     char opt;
-    char name[100] = "/";
+    char name[200] = "/";
     while((opt = getopt(argc, argv, ":")) != -1) {
         switch(opt) {
             default:
@@ -166,17 +168,27 @@ void cmd_cd(int argc, char *argv[]) {
         strcpy(name, argv[optind]);
     }
 
-    dir_t dir;
-    dir_read(cmd_struct.fs, cmd_struct.inode, &dir);
+    char *tok = strtok(argv[1], "/");
+    // printf("%ld\n", tok);
+    if(tok == NULL) {
+        cmd_struct.path_size = 0;
+        cmd_struct.inode = 0;    
+        return;
+    }
 
-    for(int i=0; i<dir.nitems; ++i) {
-        if(strcmp(dir.items[i].name, name) == 0) {
-            int new_inode = dir.items[i].inode;
-            cmd_struct.inode = new_inode;
-            if(strcmp(name, "..") == 0) cmd_struct.path_size = max(0, cmd_struct.path_size-1);
-            else if(strcmp(name, ".")) strcpy(cmd_struct.path[cmd_struct.path_size++], name);
-            break;
-        }
+    if(strcmp(tok, "") == 0) {
+        cmd_struct.path_size = 0;
+        cmd_struct.inode = 0;    
+        tok = strtok(NULL, "/");
+    }
+
+    while(tok != NULL) {
+        int new_inode = dir_open(cmd_struct.fs, cmd_struct.inode, tok);
+        if(new_inode == -1) break;
+        cmd_struct.inode = new_inode;
+        if(strcmp(tok, "..") == 0) cmd_struct.path_size = max(0, cmd_struct.path_size-1);
+        else if(strcmp(tok, ".")) strcpy(cmd_struct.path[cmd_struct.path_size++], tok);
+        tok = strtok(NULL, "/");
     }
 
 }
@@ -267,9 +279,21 @@ void cmd_rename(int argc, char *argv[]) {
     file_rename(cmd_struct.fs, cmd_struct.inode, name, new_name);
 }
 
+void cmd_run(int argc, char *argv[]) {
+    char *name = argv[1];
+
+    FILE *f = fopen(name, "r");
+    char line[200];
+    while(fgets(line, 199, f)) {
+        cmd_execute(line);
+    }
+
+    fclose(f);
+}
+
 int get_cmd_value(char cmd[]) {
-    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat","stat","mkfs","copyin","rename"};
-    const int cntCommands = 13;
+    const char *commands[] = {"exit", "mkdir", "rm", "ls", "clear", "cd","touch","mv","cat","stat","mkfs","copyin","rename", "run"};
+    const int cntCommands = 14;
 
     for(int i=0; i<cntCommands; ++i) {
         if(strcmp(cmd, commands[i]) == 0) return i;
@@ -297,16 +321,36 @@ void cmd_init(file_system_t *file_not_global) {
     // fs_flush(cmd_struct.fs);
 }
 
-void cmd_execute(int argc, char *argv[]) {
+void cmd_execute(char *line) {
+
+    int len = strlen(line);
+    if(len == 0) return;
+
+    int argc;
+    char *argv[200];
+
+    while(line[len-1] == '\n' || line[len-1] == '\r') line[--len] = '\0';      // remove '\n'
+
+    fprintf(stderr, "%s.\n", line);
+
+    argv[0] = strtok(line, " ");
+    argc = 1;
+
+    while(argv[argc-1] != NULL) {
+        argv[argc++] = strtok(NULL, " ");
+    }
+    argc--;
+
+    if(argc == 0) return;
+
     optind = 0;
     switch(get_cmd_value(argv[0])) {
         case 0:
             exit(0);
             break;
-        case 1: {
+        case 1:
             cmd_mkdir(argc, argv);
             break;
-        }
         case 2:
             cmd_rm(argc, argv);
             break;
@@ -339,6 +383,9 @@ void cmd_execute(int argc, char *argv[]) {
             break;
         case 12:
             cmd_rename(argc, argv);
+            break;
+        case 13:
+            cmd_run(argc, argv);
             break;
 
         default:

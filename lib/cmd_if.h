@@ -13,6 +13,6 @@ typedef struct cmd_if {
 
 void cmd_path(char *path);
 void cmd_init(file_system_t *fs);
-void cmd_execute(int argc, char *argv[]);
+void cmd_execute(char *line);
 
 #endif

@@ -148,7 +148,7 @@ void fs_init(file_system_t *fs, disk_t *disk) {
 }
 
 void fs_flush(file_system_t *fs) {
-    write_bitmaps(fs);
+    
 }
 
 void fs_destroy(file_system_t *fs) {
@@ -179,7 +179,7 @@ void fs_format(file_system_t *fs) {
 
     reset_bits(&fs->b_inode, 0, NUMBER_OF_INODES-1);
 
-    fs_flush(fs);
+    write_bitmaps(fs);
 }
 
 int  fs_create(file_system_t *fs, int file_type) {
@@ -192,6 +192,8 @@ int  fs_create(file_system_t *fs, int file_type) {
     inode_t inode;
     inode_init(&inode, file_type, 0, av, 0, 0);
     write_inode(fs, new_inode, &inode);
+
+    write_bitmaps(fs);
     return new_inode;
 }
 
@@ -264,6 +266,8 @@ void fs_write(file_system_t *fs, int inode_index, uint8_t *data, int size) {
     disk_write(fs->disk, pointers, inode.disk_block_ptr);
     free(pointers);
     write_inode(fs, inode_index, &inode);
+
+    write_bitmaps(fs);
 }
 
 void fs_delete(file_system_t *fs, int inode_index) {
@@ -289,6 +293,8 @@ void fs_delete(file_system_t *fs, int inode_index) {
 
     reset_bits(&fs->b_block, inode.disk_block_ptr, inode.disk_block_ptr);
     free(pointers);
+
+    write_bitmaps(fs);
 }
 
 int  fs_type(file_system_t *fs, int inode_index) {
