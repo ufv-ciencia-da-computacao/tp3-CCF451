@@ -63,6 +63,7 @@ void cmd_mkfs(int argc, char *argv[]) {
     dir.nitems = 2;
 
     cmd_struct.inode = inode;
+    cmd_struct.path_size = 0;
 
     fs_write(cmd_struct.fs, inode, (uint8_t*)dir.items, dir.nitems*sizeof(dir_item_t));
     fs_flush(cmd_struct.fs);

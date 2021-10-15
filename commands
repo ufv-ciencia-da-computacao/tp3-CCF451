@@ -1,9 +1,9 @@
 mkfs 512 4096
-mkdir outro
-cd outro
-mkdir sub-outro
-cd sub-outro
+mkdir teste
+cd teste
+mkdir sub-teste
+cd sub-teste
 touch file
-copyin file main.c
-mkdir sub-sub-outro
-cd /
+copyin file input
+mkdir sub-sub-teste
+cd ..
