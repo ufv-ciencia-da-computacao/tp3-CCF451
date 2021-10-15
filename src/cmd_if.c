@@ -27,8 +27,14 @@ void cmd_path(char *path) {
 void cmd_mkfs(int argc, char *argv[]) {
     char opt;
     char *name;
-    while((opt = getopt(argc, argv, ":")) != -1) {
+    while((opt = getopt(argc, argv, ":v")) != -1) {
         switch(opt) {
+            case 'v':
+                printf("mkfs\n");
+                printf("Aqui o disco é formatado com os valores passados na entrada\n");
+                printf("O sistema de arquivos é formatado para usar os novos valores atribuidos ao disco\n");
+                printf("O diretorio raiz é criado e escrito no sistema de arquivos\n");
+                break;
             default:
                 return;
         }
@@ -65,8 +71,14 @@ void cmd_mkfs(int argc, char *argv[]) {
 void cmd_mkdir(int argc, char *argv[]) {
     char opt;
     char *name;
-    while((opt = getopt(argc, argv, ":")) != -1) {
+    while((opt = getopt(argc, argv, ":v")) != -1) {
         switch(opt) {
+            case 'v':
+                printf("mkdir\n");
+                printf("Usando o inode do diretorio atual, o sistema de arquivos cria um novo arquivo com propriedades de diretorio\n");
+                printf("Os diretorios . e .. são adicionados nesse arquivo\n");
+                printf("Os blocos usados para o diretorio são marcados no bitmap como blocos indisponíveis\n");
+                break;
             default:
                 return;
         }
@@ -89,8 +101,14 @@ void cmd_rm(int argc, char *argv[]) {
     char opt;
     int remove_dir = 0;
     char *name = NULL;
-    while((opt = getopt(argc, argv, "r")) != -1) {
+    while((opt = getopt(argc, argv, ":rv")) != -1) {
         switch(opt) {
+            case 'v':
+                printf("rm\n");
+                printf("Esse comando pode remover arquivos ou diretórios\n");
+                printf("No modo recursivo ele itera sobre os subdiretórios e chama recursivamente para aqueles que são diretórios\n");
+                printf("Os blocos removidos são marcados como disponíveis no bitmap\n");
+                break;
             case 'r':
                 remove_dir = 1;
                 break;
@@ -120,8 +138,15 @@ void cmd_ls(int argc, char *argv[]) {
     char opt;
     char *name = NULL;
     int print_inode = 0;
-    while((opt = getopt(argc, argv, "i")) != -1) {
+    while((opt = getopt(argc, argv, ":iv")) != -1) {
         switch(opt) {
+            case 'v':
+                printf("ls\n");
+                printf("Aqui todo o conteúdo de um diretório é buscado e mostrado na tela\n");
+                printf("Para fazer a leitura, acessamos o disco pelos blocos do inode atual\n");
+                printf("Buacamos todo os itens de diretório e apresentamos na tela\n");
+                printf("E possível ver os inodes de cada arquivo usando -i\n");
+                break;
             case 'i':
                 print_inode = 1;
                 break;
@@ -149,10 +174,17 @@ void cmd_ls(int argc, char *argv[]) {
 }
 
 void cmd_cd(int argc, char *argv[]) {
-    char opt;
     char name[200] = "/";
-    while((opt = getopt(argc, argv, ":")) != -1) {
+    char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
         switch(opt) {
+            case 'v':
+                printf("cd\n");
+                printf("Para abrir um diretório, separamos o nome pelos caracteres '/'\n");
+                printf("Se o primeiro caractere for '/', então o caminho é absoluto. Senão, e relativo\n");
+                printf("Os nomes são lidos um a um e a cada leitura, o sudiretorio e aberto\n");
+                printf("Ao final, temos um diretório aberto\n");
+                break;
             default:
                 printf("%s: argumetos invalidos\n", argv[0]);
                 return;
@@ -196,6 +228,19 @@ void cmd_cd(int argc, char *argv[]) {
 void cmd_touch(int argc, char *argv[]){
 
   char *name=argv[1];
+  char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("touch\n");
+                printf("Usamos o sistema de arquivos para criar um arquivo, ou seja, usar um inode disponivel para um novo arquivo\n");
+                printf("Iniciamente o arquivo e vazio\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 // open
 //   file_create(cmd_struct.fs, cmd_struct.inode, name);
 
@@ -205,12 +250,41 @@ void cmd_touch(int argc, char *argv[]){
 void cmd_mv(int argc, char *argv[]){
   char *name=argv[1];
   char *path=argv[2];
+  char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("mv\n");
+                printf("Move um arquivo do diretorio atual para algum outro diretorio ou arquivo\n");
+                printf("Usa o mesmo processo do comando cd para abrir o diretorio destino\n");
+                printf("Um novo arquivo e criado\n");
+                printf("Em seguida os dados do arquivo atual sao copiados para o novo arquivo criado\n");
+                printf("Por fim, os dados do arquivo atual sao apagados\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
   file_move(cmd_struct.fs, cmd_struct.inode, name, path);
 }
 
 void cmd_cat(int argc, char *argv[]){
   char *name=argv[1];
+  char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("cat\n");
+                printf("E feita uma leitura do disco para recuperar o arquivo\n");
+                printf("Os dados lidos são mostrados na tela\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
   file_t file;
   file_read(cmd_struct.fs, cmd_struct.inode, name, &file);
@@ -222,6 +296,19 @@ void cmd_cat(int argc, char *argv[]){
 void cmd_stat(int argc, char *argv[]){
     char *name=argv[0];
     char *file=argv[1];
+    char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("stat\n");
+                printf("Esse comando lê os dados do inode do arquivo ou diretorio desejado\n");
+                printf("Os dados lidos são apresentados na tela\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
     dir_t dir;
     dir_read(cmd_struct.fs, cmd_struct.inode, &dir);
@@ -255,6 +342,20 @@ void cmd_stat(int argc, char *argv[]){
 void cmd_copyin(int argc, char *argv[]) {
     char *name = argv[1];
     char *real = argv[2];
+    char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("copyin\n");
+                printf("Com esse comando copiamos os dados de um arquivo real na maquina para dentro de uma arquivo simulado\n");
+                printf("E feita a leitura do arquivo real com no maximo 65536 bytes\n");
+                printf("Os dados são escritos no arquivo de destino, alocando ou apagando blocos quando necesario\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
     FILE *f = fopen(real, "r");
     file_t file;
@@ -275,12 +376,40 @@ void cmd_copyin(int argc, char *argv[]) {
 void cmd_rename(int argc, char *argv[]) {
     char *name = argv[1];
     char *new_name = argv[2];
+    char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("rename\n");
+                printf("Nesse comando, percorremos o diretorio atual em busca do nome atual\n");
+                printf("Quando é encontrado, subtituimos pelo novo nome\n");
+                printf("Os nomes de arquivos e diretorios podem ter ate 17 caracteres\n");
+                printf("Os nomes nao podem conter espacos\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
     file_rename(cmd_struct.fs, cmd_struct.inode, name, new_name);
 }
 
 void cmd_run(int argc, char *argv[]) {
     char *name = argv[1];
+    char opt;
+    while((opt = getopt(argc, argv, ":v")) != -1) {
+        switch(opt) {
+            case 'v':
+                printf("run\n");
+                printf("Esse comando le um arquivo real de entrada e redireciona as linhas para dentro do sistema\n");
+                printf("Cada linha é entao executada\n");
+                break;
+            default:
+                printf("%s: argumetos invalidos\n", argv[0]);
+                return;
+        }
+    }
 
     FILE *f = fopen(name, "r");
     char line[200];

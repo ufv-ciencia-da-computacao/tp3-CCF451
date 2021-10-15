@@ -148,7 +148,7 @@ void fs_init(file_system_t *fs, disk_t *disk) {
 }
 
 void fs_flush(file_system_t *fs) {
-    
+    write_bitmaps(fs);
 }
 
 void fs_destroy(file_system_t *fs) {
